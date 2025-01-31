@@ -1,6 +1,5 @@
 from django.urls import path
-from . import main_page_data
-
+from . import views
 urlpatterns = [
-    path('api/main-page/', main_page_data, name='main_page_data'),
+    path('api/main-page/', views.main_page_data, name='main_page_data'),
 ]
