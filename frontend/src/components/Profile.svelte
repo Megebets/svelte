@@ -4,47 +4,47 @@
 	let isEditing = false;
 	let profileCompletion = 0; // Процент заполнения анкеты
 	let userData = {
-		last_name: '',
-		name: '',
-		middle_name: '',
-		age: 30,
-		has_parents: '',
-    livingplace: '',
-		birthdate: '',
-		birthplace: '',
-		number_of_daughters: 0,
-		number_of_sons: 0,
-		residence: '',
-		contact_phone: '',
-		trusted_person_phone: '',
-    has_working: '',
-		has_housing: '',
-		was_married: '',
-		height: 170,
-		has_criminal_record: false,
-		has_bad_habits: '',
-		performs_namaz: '',
-		clothing_preference: '',
-		spouse_nationality_importance: false,
-		spouse_age_preference: 30,
-		ok_with_divorced_spouse: false,
-    ok_with_spouse_children: '',
-		willing_to_relocate: false,
-		agree_to_be_second_wife: false,
-		plan_to_have_children: true,
-		health_status: '',
-		additional_info: '',
-		spouse_requirements: '',
-		profile_completion_date: '',
-		consent_to_data_processing: false,
-		has_children: false,
-		children_boys: '',
-		children_girls: '',
-		children_ages: '',
-		education: '',
-		education_level: '',
-		specialty: '',
-		madhhab: ''
+		avatar: '', // Аватар пользователя (ссылка на изображение)
+		last_name: '', // Фамилия
+		name: '', // Имя
+		nationality: '', // Национальность
+		middle_name: '', // Отчество
+		age: 30, // Возраст (по умолчанию 30)
+		has_parents: false, // Есть ли родители (Да/Нет)
+		livingplace: '', // Место проживания (город, страна)
+		birthdate: '', // Дата рождения
+		birthplace: '', // Место рождения
+		residence: '', // Текущее место жительства (город, страна)
+		contact_phone: '', // Контактный телефон
+		trusted_person_phone: '', // Телефон доверенного лица
+		education: false, // есть ли образование
+		education_level: '', // Уровень образования (школа, бакалавр, магистр и т. д.)
+		specialty: '', // Специальность (профессия, сфера деятельности)
+		has_working: false, // Работает ли человек (Да/Нет)
+		has_housing: false, // Есть ли собственное жильё (Да/Нет)
+		was_married: false, // Был(а) ли в браке (Да/Нет)
+		has_children: false, // Есть ли дети (true/false)
+		children_boys: '', // Количество сыновей (если есть дети)
+		children_girls: '', // Количество дочерей (если есть дети)
+		children_ages: '', // Возраст детей
+		height: 170, // Рост (по умолчанию 170 см)
+		has_criminal_record: false, // Есть ли судимость (true/false)
+		has_bad_habits: '', // Есть ли вредные привычки (курение, алкоголь и т.д.)
+		performs_namaz: false, // Совершает ли намаз (Да/Нет)
+		clothing_preference: '', // Предпочтение в одежде (традиционная, современная и т. д.)
+		spouse_nationality_importance: false, // Важна ли национальность супруга (true/false)
+		spouse_age_preference: 30, // Предпочтительный возраст супруга (по умолчанию 30)
+		ok_with_divorced_spouse: false, // Готов(а) ли вступить в брак с разведённым(ой) (true/false)
+		ok_with_spouse_children: false, // Готов(а) ли к детям супруга (Да/Нет)
+		willing_to_relocate: false, // Готов(а) ли к переезду (true/false)
+		agree_to_be_second_wife: false, // Готова ли стать второй женой (true/false)
+		plan_to_have_children: true, // Планирует ли иметь детей (true/false)
+		health_status: '', // Состояние здоровья (хронические болезни, аллергии и т. д.)
+		additional_info: '', // Дополнительная информация (личные предпочтения, хобби и т. д.)
+		spouse_requirements: '', // Требования к супругу
+		profile_completion_date: '', // Дата заполнения анкеты
+		consent_to_data_processing: false, // Согласие на обработку данных (true/false)
+		madhhab: '' // Мазхаб (Ханафи, Шафии и т. д.)
 	};
 	function saveProfile() {
 		console.log('Данные отправлены:', userData);
@@ -53,14 +53,15 @@
 
 	// Рассчитываем процент заполнения анкеты
 	function calculateCompletion() {
-		const fields = Object.values(userData);
-		const filled = fields.filter((value) => value !== '' && value !== null);
-		profileCompletion = Math.round((filled.length / fields.length) * 100);
+		const filled = Object.values(userData).filter(
+			(value) => value !== '' && value !== null && value !== false
+		);
+		profileCompletion = Math.round((filled.length / Object.keys(userData).length) * 100);
 	}
 
 	// Запускаем расчет при загрузке страницы
 	onMount(() => {
-		calculateCompletion();
+		setTimeout(() => calculateCompletion(), 100);
 	});
 
 	// Пример валидации
@@ -69,12 +70,18 @@
 			alert('Возраст должен быть 18 лет или больше!');
 			return false;
 		}
-		if (!/^\+?[1-9]\d{1,14}$/.test(userData.contactPhone)) {
+		if (!/^\+?\d{10,15}$/.test(userData.contact_phone)) {
 			alert('Введите корректный номер телефона!');
 			return false;
 		}
 		return true;
 	}
+
+	$: if (!userData.has_children) {
+								userData.children_boys = '';
+								userData.children_girls = '';
+								userData.children_ages = '';
+							}
 
 	//   function saveProfile() {
 	//     if (validateForm()) {
@@ -83,6 +90,8 @@
 	//       calculateCompletion();
 	//     }
 	//   }
+
+
 </script>
 
 <div class="flex min-h-screen flex-col bg-gray-100">
@@ -91,10 +100,14 @@
 	<div class="container mx-auto flex items-center justify-between px-4 py-4">
 		<div class="flex items-center gap-4">
 			<div class="rounded-[50%] bg-gray-300">
-				<img src={userData.avatar} alt="" class="h-16 w-16 rounded-full object-cover" />
+				<img
+					src={userData.avatar || 'avatar.jpg'}
+					alt="Аватар"
+					class="h-16 w-16 rounded-full object-cover"
+				/>
 			</div>
 			<div>
-				<h1 class="text-2xl font-bold">{userData.fullName}</h1>
+				<h1 class="text-2xl font-bold">{userData.name}</h1>
 				<p class="text-sm text-gray-500">Ваш личный кабинет</p>
 			</div>
 		</div>
@@ -111,8 +124,8 @@
 					<h2 class="mb-4 text-xl font-semibold">Анкета пользователя</h2>
 
 					<div class="grid grid-cols-1 gap-4">
-						<div>
-							<label class="block text-sm font-medium text-gray-700">Фамилия</label>
+						<div class="group border-2 border-gray-300 rounded-lg p-4 transition focus-within:border-blue-500">
+							<label for=""	 class="block text-sm font-medium text-gray-700">Фамилия</label>
 							<input
 								type="text"
 								bind:value={userData.last_name}
@@ -120,8 +133,8 @@
 							/>
 						</div>
 
-						<div>
-							<label class="block text-sm font-medium text-gray-700">Имя</label>
+						<div class="group border-2 border-gray-300 rounded-lg p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Имя</label>
 							<input
 								type="text"
 								bind:value={userData.name}
@@ -129,8 +142,8 @@
 							/>
 						</div>
 
-						<div>
-							<label class="block text-sm font-medium text-gray-700">Отчество</label>
+						<div class="group border-2 border-gray-300 rounded-lg p-4 transition focus-within:border-blue-500">
+							<label for=""  class="block text-sm font-medium text-gray-700">Отчество</label>
 							<input
 								type="text"
 								bind:value={userData.middle_name}
@@ -138,8 +151,8 @@
 							/>
 						</div>
 
-						<div>
-							<label class="block text-sm font-medium text-gray-700">Возраст</label>
+						<div class="group border-2 border-gray-300 rounded-lg p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Возраст</label>
 							<input
 								type="number"
 								bind:value={userData.age}
@@ -147,8 +160,8 @@
 							/>
 						</div>
 
-						<div>
-							<label class="block text-sm font-medium text-gray-700">Дата рождения</label>
+						<div class="group border-2 border-gray-300 rounded-lg p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Дата рождения</label>
 							<input
 								type="date"
 								bind:value={userData.birthdate}
@@ -156,8 +169,8 @@
 							/>
 						</div>
 
-						<div>
-							<label class="block text-sm font-medium text-gray-700">Место рождения</label>
+						<div class="group border-2 border-gray-300 rounded-lg p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Место рождения</label>
 							<input
 								type="text"
 								bind:value={userData.birthplace}
@@ -165,36 +178,32 @@
 							/>
 						</div>
 
-						<div>
-							<label class="block text-sm font-medium text-gray-700">Национальность</label>
+						<div class="group border-2 border-gray-300 rounded-lg p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Национальность</label>
 							<input
 								type="text"
-								bind:value={userData.birthplace}
-								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-							/>
+								bind:value={userData.nationality}
+								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
 						</div>
 
-						<div>
-							<label class="block text-sm font-medium text-gray-700">Адрес проживания</label>
+						<div class="group border-2 border-gray-300 rounded-lg p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Адрес проживания</label>
 							<input
 								type="text"
-								bind:value={userData.birthplace}
-								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-							/>
+								bind:value={userData.residence}
+								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
 						</div>
 
-						<div>
-							<label class="block text-sm font-medium text-gray-700">Контактный телефон</label>
+						<div class="group border-2 border-gray-300 rounded-lg p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Контактный телефон</label>
 							<input
 								type="text"
 								bind:value={userData.contact_phone}
-								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-							/>
+								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
 						</div>
 
-						<div>
-							<label class="block text-sm font-medium text-gray-700">Телефон доверенного лица</label
-							>
+						<div class="group border-2 border-gray-300 rounded-lg p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Телефон доверенного лица</label>
 							<input
 								type="text"
 								bind:value={userData.trusted_person_phone}
@@ -202,94 +211,99 @@
 							/>
 						</div>
 
-						<div>
-							<label class="block text-sm font-medium text-gray-700">Рост (см)</label>
+						<div class="group border-2 border-gray-300 rounded-lg p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Рост (см)</label>
 							<input
 								type="number"
 								bind:value={userData.height}
-								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-							/>
+								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
 						</div>
 
 						<!-- Вопрос: имеются ли дети? -->
-						<div>
-							<label class="block text-sm font-medium text-gray-700">Имеются ли дети?</label>
-							<select
-								bind:value={userData.has_children}
-								class="mt-1 block w-full rounded-md border-gray-300"
-							>
-								<option value={false}>Нет</option>
-								<option value={true}>Да</option>
-							</select>
-						</div>
-
-						{#if userData.has_children}
-							<div>
-								<label class="block text-sm font-medium text-gray-700">Сколько мальчиков?</label>
-								<input
-									type="number"
-									bind:value={userData.children_boys}
-									class="mt-1 block w-full rounded-md border-gray-300"
-								/>
-							</div>
-
-							<div>
-								<label class="block text-sm font-medium text-gray-700">Сколько девочек?</label>
-								<input
-									type="number"
-									bind:value={userData.children_girls}
-									class="mt-1 block w-full rounded-md border-gray-300"
-								/>
-							</div>
-
-							<div>
-								<label class="block text-sm font-medium text-gray-700">Возраст детей</label>
-								<input
-									type="text"
-									bind:value={userData.children_ages}
-									class="mt-1 block w-full rounded-md border-gray-300"
-									placeholder="Например: 5, 7, 10"
-								/>
-							</div>
-						{/if}
-
-						<!-- Вопрос: образование -->
-						<div>
-							<label class="block text-sm font-medium text-gray-700">Образование</label>
-							<select
-								bind:value={userData.education}
-								class="mt-1 block w-full rounded-md border-gray-300"
-							>
-								<option value="">Нет</option>
-								<option value="есть">Есть</option>
-							</select>
-						</div>
-
-						{#if userData.education === 'есть'}
-							<div>
-								<label class="block text-sm font-medium text-gray-700">Какой уровень?</label>
-								<select bind:value={userData.education_level} class="mt-1 block w-full rounded-md border-gray-300">
-									<option value="высшее">Высшее</option>
-									<option value="среднее специальное">Среднее специальное</option>
+						<div class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<div> <label for="" class="block text-sm font-medium text-gray-700">Имеются ли дети?</label>
+								<select
+									bind:value={userData.has_children}
+									class="mt-1 block w-full rounded-md border-gray-300">
+									<option value={false}>Нет</option>
+									<option value={true}>Да</option>
 								</select>
 							</div>
 
-							{#if userData.education_level !== ''}
+							{#if userData.has_children}
 								<div>
-									<label class="block text-sm font-medium text-gray-700">Специальность</label>
+									<label for="" class="block text-sm font-medium text-gray-700">Сколько мальчиков?</label>
 									<input
-										type="text"
-										bind:value={userData.specialty}
+										type="number"
+										bind:value={userData.children_boys}
 										class="mt-1 block w-full rounded-md border-gray-300"
 									/>
 								</div>
+
+								<div >
+									<label for="" class="block text-sm font-medium text-gray-700">Сколько девочек?</label>
+									<input
+										type="number"
+										bind:value={userData.children_girls}
+										class="mt-1 block w-full rounded-md border-gray-300"
+									/>
+								</div>
+
+								<div>
+									<label for="" class="block text-sm font-medium text-gray-700">Возраст детей</label>
+									<input
+										type="text"
+										bind:value={userData.children_ages}
+										class="mt-1 block w-full rounded-md border-gray-300"
+										placeholder="Например: 5, 7, 10"
+									/>
+								</div>
 							{/if}
-						{/if}
+
+							
+						</div>
+
+						<!-- Вопрос: образование -->
+
+						<div class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<div>
+							  <label for="" class="block text-sm font-medium text-gray-700">Образование</label>
+							  <select bind:value={userData.education} class="mt-1 block w-full rounded-md border-gray-300">
+								<option value=true>Есть</option>
+								<option value=false>Нет</option>
+							  </select>
+							</div>
+						  
+							{#if userData.education === true}
+							  <div>
+								<label for="" class="block text-sm font-medium text-gray-700">Какой уровень?</label>
+								<select bind:value={userData.education_level} class="mt-1 block w-full rounded-md border-gray-300">
+								  <option value="высшее">Высшее</option>
+								  <option value="среднее специальное">Среднее специальное</option>
+								</select>
+							  </div>
+						  
+							  {#if userData.education_level !== ''}
+								<div>
+								  <label for="" class="block text-sm font-medium text-gray-700">Специальность</label>
+								  <input
+									type="text"
+									bind:value={userData.specialty}
+									class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+								  />
+								</div>
+							  {/if}
+							{/if}
+						  </div>
 
 						<!-- Вопрос: мазхаб -->
-						<div>
-							<label class="block text-sm font-medium text-gray-700">Какого мазхаба придерживаетесь?</label>
-							<select bind:value={userData.madhhab} class="mt-1 block w-full rounded-md border-gray-300">
+
+						<div class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Какого мазхаба придерживаетесь?</label>
+							<select
+								bind:value={userData.madhhab}
+								class="mt-1 block w-full rounded-md border-gray-300"
+							>
 								<option value="ханафитский">Ханафитский</option>
 								<option value="маликитский">Маликитский</option>
 								<option value="шафиитский">Шафиитский</option>
@@ -297,157 +311,185 @@
 							</select>
 						</div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700">У вас есть собственное жилье?</label>
-              <select bind:value={userData.has_housing} class="mt-1 block w-full rounded-md border-gray-300" >
-                <option value="Есть">Есть</option>
-                <option value="Нет">Нет</option>
-              </select>
-            </div>
+						<div class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">У вас есть собственное жилье?</label>
+							<select
+								bind:value={userData.has_housing}
+								class="mt-1 block w-full rounded-md border-gray-300"
+							>
+								<option value=true>Есть</option>
+								<option value=false>Нет</option>
+							</select>
+						</div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700">У вас есть родители?</label>
-              <select bind:value={userData.has_parents} class="mt-1 block w-full rounded-md border-gray-300" >
-                <option value="Есть">Есть</option>
-                <option value="Нет">Нет</option>
-              </select>
-                {#if userData.has_parents === 'Есть'}
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">Вы проживайте с родителями?</label>
-                    <select bind:value={userData.livingplace} class="mt-1 block w-full rounded-md border-gray-300" >
-                      <option value="Я проживаю с родителями">Я проживаю с родителями</option>
-                      <option value="Я живу один">Я живу один</option>
-                    </select>
-                  </div>
-                {/if}
-            </div>
-            <div> 
-              <label class="block text-sm font-medium text-gray-700">Вы работайте?</label>
-              <select bind:value={userData.has_working} class="mt-1 block w-full rounded-md border-gray-300" >
-                <option value="Работаю">Работаю</option>
-                <option value="Не работаю">Не работаю</option>
-              </select>
-            </div>
+						<div
+							class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">У вас есть родители?</label>
+							<select
+								bind:value={userData.has_parents}
+								class="mt-1 block w-full rounded-md border-gray-300">
+								<option value=true>Есть</option>
+								<option value=false>Нет</option>
+							</select>
+							{#if userData.has_parents === true}
+								<div>
+									<label for="" class="block text-sm font-medium text-gray-700">Вы проживайте с родителями?</label>
+									<select
+										bind:value={userData.livingplace}
+										class="mt-1 block w-full rounded-md border-gray-300"
+									>
+										<option value=true>Я проживаю с родителями</option>
+										<option value="Я живу один">Я живу один</option>
+									</select>
+								</div>
+							{/if}
+						</div>
+						<div
+							class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Вы работайте?</label>
+							<select
+								bind:value={userData.has_working}
+								class="mt-1 block w-full rounded-md border-gray-300">
+								<option value=true>Работаю</option>
+								<option value=false>Не работаю</option>
+							</select>
+						</div>
 
-            <div> 
-              <label class="block text-sm font-medium text-gray-700">Вы состояли в браке?</label>
-              <select bind:value={userData.was_married} class="mt-1 block w-full rounded-md border-gray-300" >
-                <option value="Да">Да</option>
-                <option value="Нет">Нет</option>
-              </select>
-            </div>
+						<div
+							class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Вы состояли в браке?</label>
+							<select
+								bind:value={userData.was_married}
+								class="mt-1 block w-full rounded-md border-gray-300">
+								<option value=true>Да</option>
+								<option value=false>Нет</option>
+							</select>
+						</div>
 
-            <div> 
-              <label class="block text-sm font-medium text-gray-700">У вас есть судимость?</label>
-              <select bind:value={userData.has_criminal_record} class="mt-1 block w-full rounded-md border-gray-300" >
-                <option value="Есть">Есть</option>
-                <option value="Нет">Нет</option>
-              </select>
-            </div>
+						<div
+							class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">У вас есть судимость?</label>
+							<select
+								bind:value={userData.has_criminal_record}
+								class="mt-1 block w-full rounded-md border-gray-300">
+								<option value=true>Есть</option>
+								<option value=false>Нет</option>
+							</select>
+						</div>
 
-            <div> 
-              <label class="block text-sm font-medium text-gray-700">Вы совершайте намаз?</label>
-              <select bind:value={userData.has_criminal_record} class="mt-1 block w-full rounded-md border-gray-300" >
-                <option value="Да">Да</option>
-                <option value="Нет">Нет</option>
-              </select>
-            </div>
+						<div
+							class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Вы совершайте намаз?</label>
+							<select
+								bind:value={userData.has_criminal_record}
+								class="mt-1 block w-full rounded-md border-gray-300">
+								<option value=true>Да</option>
+								<option value=false>Нет</option>
+							</select>
+						</div>
 
-            <div> 
-              <label class="block text-sm font-medium text-gray-700">Какие вредные привычки присуши вам?</label>
-              <input
+						<div
+							class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Какие вредные привычки присуши вам?</label>
+							<input
 								type="text"
 								bind:value={userData.has_bad_habits}
 								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
 							/>
-            </div>
+						</div>
 
-            <div> 
-              <label class="block text-sm font-medium text-gray-700">Возможен брак с разведённым(ой)?</label>
-              <select bind:value={userData.ok_with_divorced_spouse} class="mt-1 block w-full rounded-md border-gray-300" >
-                <option value="Да">Да</option>
-                <option value="Нет">Нет</option>
-              </select>
-            </div>
+						<div
+							class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Возможен брак с разведённым(ой)?</label>
+							<select
+								bind:value={userData.ok_with_divorced_spouse} class="mt-1 block w-full rounded-md border-gray-300">
+								<option value=true>Да</option>
+								<option value=false>Нет</option>
+							</select>
+						</div>
 
-            <div> 
-              <label class="block text-sm font-medium text-gray-700">Возможен ли брак с человеком у каторого есть дети?</label>
-              <select bind:value={userData.ok_with_spouse_children} class="mt-1 block w-full rounded-md border-gray-300" >
-                <option value="Да">Да</option>
-                <option value="Нет">Нет</option>
-              </select>
-            </div>
+						<div class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Возможен ли брак с человеком у каторого есть дети?</label>
+							<select bind:value={userData.ok_with_spouse_children} class="mt-1 block w-full rounded-md border-gray-300">
+								<option value=true>Да</option>
+								<option value=false>Нет</option>
+							</select>
+						</div>
 
-            <div> 
-              <label class="block text-sm font-medium text-gray-700">Готовы ли к переезду?</label>
-              <select bind:value={userData.willing_to_relocate} class="mt-1 block w-full rounded-md border-gray-300" >
-                <option value="Да">Да</option>
-                <option value="Нет">Нет</option>
-              </select>
-            </div>
-    
-            <div> 
-              <label class="block text-sm font-medium text-gray-700">Согласна быть второй женой?</label>
-              <select bind:value={userData.agree_to_be_second_wife} class="mt-1 block w-full rounded-md border-gray-300" >
-                <option value="Да">Да</option>
-                <option value="Нет">Нет</option>
-              </select>
-            </div>
+						<div
+							class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Готовы ли к переезду?</label>
+							<select bind:value={userData.willing_to_relocate} class="mt-1 block w-full rounded-md border-gray-300">
+								<option value=true>Да</option>
+								<option value=false>Нет</option>
+							</select>
+						</div>
 
-            <div> 
-              <label class="block text-sm font-medium text-gray-700">Планируйте детей?</label>
-              <select bind:value={userData.plan_to_have_children} class="mt-1 block w-full rounded-md border-gray-300" >
-                <option value="Да">Да</option>
-                <option value="Нет">Нет</option>
-              </select>
-            </div>
+						<div
+							class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Согласна быть второй женой?</label>
+							<select bind:value={userData.agree_to_be_second_wife} class="mt-1 block w-full rounded-md border-gray-300">
+								<option value=true>Да</option>
+								<option value=false>Нет</option>
+							</select>
+						</div>
 
-						
+						<div
+							class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500"
+						>
+							<label for="" class="block text-sm font-medium text-gray-700">Планируйте детей?</label>
+							<select
+								bind:value={userData.plan_to_have_children}
+								class="mt-1 block w-full rounded-md border-gray-300"
+							>
+								<option value=true>Да</option>
+								<option value=false>Нет</option>
+							</select>
+						</div>
 
-						<div>
-							<label class="block text-sm font-medium text-gray-700"
+						<div
+							class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500"
+						>
+							<label for="" class="block text-sm font-medium text-gray-700"
 								>Ваши предпочтения в одежде:
 							</label>
 							<input
 								type="text"
-								bind:value={userData.education}
+								bind:value={userData.}
 								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
 							/>
 						</div>
 
-						<div>
-							<label class="block text-sm font-medium text-gray-700"
-								>Возвраст будещего(ей) супруга(и)?</label
-							>
-							<input
-								type="text"
-								bind:value={userData.education}
-								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-							/>
+						<div
+							class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Возвраст будещего(ей) супруга(и)?</label>
+							<input type="text" bind:value={userData.} class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
 						</div>
 
-						<div>
-							<label class="block text-sm font-medium text-gray-700"
+						<div
+							class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500"
+						>
+							<label for="" class="block text-sm font-medium text-gray-700"
 								>Состояние вашего здоровья:
 							</label>
 							<input
 								type="text"
-								bind:value={userData.education}
+								bind:value={userData.}
 								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
 							/>
 						</div>
 
 						<!-- Текстовые поля -->
-						<div class="mt-4">
-							<label class="block text-sm font-medium text-gray-700">О себе</label>
+						<div class="group border-2 border-gray-300 rounded-lg p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">О себе</label>
 							<textarea
 								bind:value={userData.additional_info}
 								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
 							></textarea>
 						</div>
 
-						<div class="mt-4">
-							<label class="block text-sm font-medium text-gray-700">Требования к супругу</label>
+						<div class="group border-2 border-gray-300 rounded-lg p-4 transition focus-within:border-blue-500">
+							<label for="" class="block text-sm font-medium text-gray-700">Требования к супругу</label>
 							<textarea
 								bind:value={userData.spouse_requirements}
 								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
@@ -456,32 +498,27 @@
 
 						<!-- Кнопки -->
 						<div class="mt-6 flex justify-end gap-4">
+							<!-- Чекбоксы -->
+							<div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+								{#each [{ key: 'consent_to_data_processing', label: 'Согласен(а) на обработку персональных данных' }] as item}
+									<div>
+										<label for="" class="inline-flex items-center">
+											<input
+												type="checkbox"
+												bind:checked={userData[item.key]}
+												class="form-checkbox h-5 w-5 text-indigo-600"
+											/>
+											<span class="ml-2 text-gray-700">{item.label}</span>
+										</label>
+									</div>
+								{/each}
+							</div>
 
-              <!-- Чекбоксы -->
-              <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                {#each [ { key: 'consent_to_data_processing', label: 'Согласен(а) на обработку персональных данных' }] as item}
-                  <div>
-                    <label class="inline-flex items-center">
-                      <input
-                        type="checkbox"
-                        bind:checked={userData[item.key]}
-                        class="form-checkbox h-5 w-5 text-indigo-600"
-                      />
-                      <span class="ml-2 text-gray-700">{item.label}</span>
-                    </label>
-                  </div>
-                {/each}
-              </div>
-
-							<button
-								type="button"
-								class="rounded bg-gray-500 px-4 py-2 text-white"
-								on:click={() => (userData = {})}
-							>
+							<button type="button" class="rounded bg-gray-500 px-4 py-2 text-white" on:click={() => (userData = {})}>
 								Отмена
 							</button>
 							<button
-								type="button"
+								type="button"F
 								class="rounded bg-green-500 px-4 py-2 text-white"
 								on:click={saveProfile}
 							>
@@ -493,7 +530,7 @@
 			{:else}
 				<p class="mb-4 text-gray-700">
 					Ваш возраст: {userData.age} <br />
-					Контактный телефон: {userData.contactPhone || 'Не указан'}
+					Контактный телефон: {userData.contact_phone || 'Не указан'}
 				</p>
 				<button
 					class="rounded bg-blue-500 px-4 py-2 text-white"
