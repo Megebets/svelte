@@ -2,6 +2,7 @@
 	import Header from '../components/Header.svelte';
 	import { onMount } from 'svelte';
 	let isEditing = false;
+	let originalData = {}; //Храним исходные данные
 	let profileCompletion = 0; // Процент заполнения анкеты
 	let userData = {
 		avatar: '', // Аватар пользователя (ссылка на изображение)
@@ -36,16 +37,27 @@
 		spouse_age_preference: 30, // Предпочтительный возраст супруга (по умолчанию 30)
 		ok_with_divorced_spouse: false, // Готов(а) ли вступить в брак с разведённым(ой) (true/false)
 		ok_with_spouse_children: false, // Готов(а) ли к детям супруга (Да/Нет)
+		clothing_preferences: '',  //Ваши предпочтения в одежде()
+		health: '', //Состояние вашего здоровья
 		willing_to_relocate: false, // Готов(а) ли к переезду (true/false)
 		agree_to_be_second_wife: false, // Готова ли стать второй женой (true/false)
 		plan_to_have_children: true, // Планирует ли иметь детей (true/false)
 		health_status: '', // Состояние здоровья (хронические болезни, аллергии и т. д.)
 		additional_info: '', // Дополнительная информация (личные предпочтения, хобби и т. д.)
+		spouse_age: '', //Возвраст будущего супруга   
 		spouse_requirements: '', // Требования к супругу
 		profile_completion_date: '', // Дата заполнения анкеты
 		consent_to_data_processing: false, // Согласие на обработку данных (true/false)
 		madhhab: '' // Мазхаб (Ханафи, Шафии и т. д.)
 	};
+	function startEditing(){
+		originalData= { ...userData};// копируем перед редактированием
+		isEditing = true;
+	}
+	function canselEditing() {
+		userData = { ...originalData }; // Восстанавливаем сохраненные данные
+		isEditing = false;
+	}
 	function saveProfile() {
 		console.log('Данные отправлены:', userData);
 		// Здесь можно добавить отправку данных на сервер
@@ -455,7 +467,7 @@
 							</label>
 							<input
 								type="text"
-								bind:value={userData.}
+								bind:value={userData.clothing_preferences}
 								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
 							/>
 						</div>
@@ -463,7 +475,7 @@
 						<div
 							class="group rounded-lg border-2 border-gray-300 p-4 transition focus-within:border-blue-500">
 							<label for="" class="block text-sm font-medium text-gray-700">Возвраст будещего(ей) супруга(и)?</label>
-							<input type="text" bind:value={userData.} class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
+							<input type="text" bind:value={userData.spouse_age} class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
 						</div>
 
 						<div
@@ -474,7 +486,7 @@
 							</label>
 							<input
 								type="text"
-								bind:value={userData.}
+								bind:value={userData.health}
 								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
 							/>
 						</div>
@@ -514,14 +526,10 @@
 								{/each}
 							</div>
 
-							<button type="button" class="rounded bg-gray-500 px-4 py-2 text-white" on:click={() => (userData = {})}>
+							<button type="button" class="rounded bg-gray-500 px-4 py-2 text-white" on:click={canselEditing}>
 								Отмена
 							</button>
-							<button
-								type="button"F
-								class="rounded bg-green-500 px-4 py-2 text-white"
-								on:click={saveProfile}
-							>
+							<button type="button" class="rounded bg-green-500 px-4 py-2 text-white" on:click={saveProfile}>
 								Сохранить
 							</button>
 						</div>
