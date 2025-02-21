@@ -1,5 +1,6 @@
 from django.urls import path
-from . import views
+from .views import content_view
+
 urlpatterns = [
-    path('api/main-page/', views.main_page_data, name='main_page_data'),
+    path('<str:section>/', content_view, name='content'),
 ]

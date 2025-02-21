@@ -51,6 +51,8 @@
 		consent_to_data_processing: false,
 		madhhab: ''
 	};
+	
+	
 
 	function startEditing() {
 		originalData = { ...userData };

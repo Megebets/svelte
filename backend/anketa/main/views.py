@@ -1,15 +1,22 @@
-from django.http import JsonResponse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import ContentItem
+from rest_framework import serializers
 
-def main_page_data(request):
-    data = {
-        "welcome_message": "Салам алейкум",
-        "news": [
-            {"id": 1, "title": "Первая статья", 'content': 'Описание новости 1'},
-            {"id": 2, "title": "Вторая статья",'content': 'Описание новости 2'},
-        ], 
-        'articles': [
-            {'id': 1, 'tiltle': 'Статья 1', 'content': 'Описание статьи 1'},
-            {'id': 2, 'tiltle': 'Статья 2', 'content': 'Описание статьи 2'},
-        ]
-    }
-    return JsonResponse(data)
+class ContentItemSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ContentItem
+        fields = ['title', 'text', 'date', 'image']
+
+    def get_image(self, obj):
+        if obj.image:
+            return self.context['request'].build_absolute_uri(obj.image.url)
+        return None
+
+@api_view(['GET'])
+def content_view(request, section):
+    items = ContentItem.objects.filter(section=section)
+    serializer = ContentItemSerializer(items, many=True, context={'request': request})
+    return Response(serializer.data)

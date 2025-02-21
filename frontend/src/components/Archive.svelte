@@ -1,46 +1,23 @@
 <script>
-  import Header from '../components/Header.svelte';
-</script>
-  
-  <style>
-    .archive-container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-    }
-  
-    .archive-container h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-  
-    .archive-container p {
-      line-height: 1.6;
-      font-size: 16px;
-    }
-  
-    .archive-container .content {
-      margin-top: 30px;
-    }
-  </style>
-  
-    <!-- Хедер -->
-    <Header 
-      on:openContactModal={() => openModal('contact')} 
-      on:openAuthModal={() => openModal('auth')}
-      on:openRegistrationModal={() => openModal('registration')}
-    />
+  import { archiveStore } from '$lib/stores';
 
-  <div class="archive-container">
-    <h1>Мы</h1>
-    <div class="content">
-      <p>
-        Начало
-      </p>
-      <p>
-        Дата
-      </p>
-    </div>
+  $: archiveData = $archiveStore || [];
+</script>
+
+<div class="container mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-6">Архив нашей работы</h1>
+  <div class="grid gap-6">
+    {#each archiveData as item}
+      <div class="border rounded-lg p-4 shadow">
+        <h2 class="text-xl font-semibold">{item.title}</h2>
+        {#if item.date}
+          <p class="text-gray-500">{item.date}</p>
+        {/if}
+        <p class="text-gray-700 mt-2">{item.text}</p>
+        {#if item.image}
+          <img src={item.image} alt={item.title} class="mt-4 w-full h-48 object-cover rounded" />
+        {/if}
+      </div>
+    {/each}
   </div>
-  
+</div>
