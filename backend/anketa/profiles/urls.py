@@ -1,6 +1,6 @@
 from django.urls import path
-from . import views
+from .views import SaveProfileView
 
 urlpatterns = [
-    path('register/', views.register_user, name='register'),
+    path('save-profile/', SaveProfileView.as_view(), name='save_profile'),
 ]

@@ -117,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'profiles.UserProfile'
+# AUTH_USER_MODEL = 'profiles.UserProfile'
 
 
 
